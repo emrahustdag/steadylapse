@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Steadylapse — Time Lapse Camera for Android</title>
+<meta name="description" content="Steadylapse is your whole timelapse studio in one Android app: shoot for hours with the screen off, change the color anytime with 8 looks, full manual control, every lens and RAW (DNG) frames — the video builds itself.">
+<meta property="og:title" content="Steadylapse — Your whole timelapse studio. One app.">
+<meta property="og:description" content="Shoot · Leave · Render · Grade. Hours of screen-off shooting, 8 color effects you can change after the shoot, manual controls and RAW (DNG) — on your Android phone.">
+<meta property="og:image" content="assets/og-image-15.jpg">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#1c1e22">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/favicon-192.png">
+<style>
+  :root {
+    --bg: #1c1e22; --bg2: #24272c; --card: #2a2d33; --line: #383c43;
+    --text: #eceef2; --muted: #a7acb5; --accent: #ff1e8c; --accent2: #ff6db3;
+    --dn: linear-gradient(90deg, #f7b267 0%, #f27059 25%, #c2366f 52%, #5b2a7a 76%, #141a33 100%);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 17px/1.6 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+  .cond { font-family: "Bahnschrift SemiCondensed", "Roboto Condensed", "Arial Narrow", "Segoe UI", sans-serif;
+          font-stretch: condensed; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+
+  header { position: sticky; top: 0; z-index: 5; background: rgba(28,30,34,.88); backdrop-filter: blur(8px);
+           border-bottom: 1px solid var(--line); }
+  header .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: .14em; font-size: 15px; color: var(--text); }
+  .brand img { width: 30px; height: 30px; }
+  .brand b { color: var(--accent); font-weight: 600; }
+  nav a { color: var(--muted); margin-left: 22px; font-size: 15px; }
+  nav a:hover { color: var(--text); text-decoration: none; }
+  @media (max-width: 760px) { nav a.opt { display: none; } }
+  @media (max-width: 420px) { nav a { margin-left: 14px; font-size: 14px; } .brand { font-size: 14px; letter-spacing: .1em; } }
+
+  .hero { position: relative; overflow: hidden;
+          background: radial-gradient(60% 70% at 28% 45%, rgba(212,0,106,.22), transparent 70%), var(--bg); }
+  .hero .wrap { display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: center; padding-top: 72px; padding-bottom: 80px; }
+  .hero img.ap { width: 100%; max-width: 440px; justify-self: center; filter: drop-shadow(0 18px 40px rgba(0,0,0,.55)); }
+  .eyebrow { font-size: 13px; letter-spacing: .22em; color: var(--accent2); margin: 0 0 14px; font-weight: 600; }
+  .hero h1 { font-size: clamp(38px, 5.8vw, 62px); line-height: 1.04; margin: 0 0 20px; font-weight: 600; letter-spacing: -.015em; }
+  .hero h1 span { color: var(--accent); }
+  .hero p.lead { font-size: 19px; color: var(--muted); margin: 0 0 30px; max-width: 34em; }
+  .hero p.lead strong { color: var(--text); font-weight: 600; }
+  .cta { display: inline-flex; align-items: center; gap: 10px; background: var(--accent); color: #fff; font-weight: 600;
+         padding: 14px 24px; border-radius: 999px; font-size: 16px; box-shadow: 0 8px 24px rgba(255,30,140,.28); }
+  .cta:hover { background: #ff3d9b; text-decoration: none; }
+  .cta svg { width: 20px; height: 20px; }
+  .sub-cta { display: block; margin-top: 12px; font-size: 14px; color: var(--muted); }
+  @media (max-width: 820px) {
+    .hero .wrap { grid-template-columns: 1fr; text-align: center; padding-top: 40px; }
+    .hero img.ap { max-width: 260px; order: -1; }
+    .hero p.lead { margin-left: auto; margin-right: auto; }
+  }
+
+  /* Sinematik şerit: gündüzden geceye renk geçişi + büyük dar başlık */
+  .band { background: var(--dn); position: relative; }
+  .band::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.05), rgba(0,0,0,.28)); }
+  .band .wrap { position: relative; z-index: 1; padding: 54px 16px; text-align: center; }
+  .band .big { font-size: clamp(30px, 6.4vw, 70px); line-height: 1; color: #fff; text-shadow: 0 3px 18px rgba(0,0,0,.35); margin: 0; }
+  .band .small { margin: 14px 0 0; color: rgba(255,255,255,.88); font-size: 17px; text-shadow: 0 1px 8px rgba(0,0,0,.35); }
+
+  section { padding: 76px 0; }
+  section.alt { background: var(--bg2); }
+  h2 { font-size: clamp(27px, 3.6vw, 40px); margin: 0 0 10px; font-weight: 600; letter-spacing: -.01em; line-height: 1.15; }
+  h2 span { color: var(--accent); }
+  p.intro { color: var(--muted); margin: 0 0 40px; max-width: 42em; }
+
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; counter-reset: s; }
+  .step { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 24px; }
+  .step::before { counter-increment: s; content: counter(s); display: inline-grid; place-items: center; width: 34px; height: 34px;
+                  border-radius: 50%; background: rgba(255,30,140,.15); color: var(--accent2); font-weight: 700; margin-bottom: 12px; }
+  .step h3 { margin: 0 0 6px; font-size: 19px; }
+  .step p { margin: 0; color: var(--muted); font-size: 16px; }
+
+  /* Kullanım alanları */
+  .uses { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .use { border-radius: 18px; overflow: hidden; background: var(--card); border: 1px solid var(--line); }
+  .use .top { height: 92px; display: flex; align-items: flex-end; padding: 14px 18px; }
+  .use .top h3 { margin: 0; font-size: 26px; color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,.45); }
+  .use .body { padding: 16px 18px 20px; }
+  .use p { margin: 0 0 10px; color: var(--muted); font-size: 15.5px; }
+  .use .hint { font-size: 13px; letter-spacing: .06em; color: var(--accent2); }
+  .g1 { background: linear-gradient(135deg, #5f8fc4, #2b4d78); }
+  .g2 { background: linear-gradient(135deg, #3a2a5c, #120f24); }
+  .g3 { background: linear-gradient(135deg, #f7b267, #c2366f 70%, #5b2a7a); }
+  .g4 { background: linear-gradient(135deg, #8a7b66, #3c352c); }
+  .g5 { background: linear-gradient(135deg, #5e9c5a, #24452a); }
+  .g6 { background: linear-gradient(135deg, #2f6f86, #12303f); }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 24px; }
+  .card svg { width: 30px; height: 30px; stroke: var(--accent2); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; margin-bottom: 10px; }
+  .card h3 { margin: 0 0 6px; font-size: 18px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15.5px; }
+  .pro { display: inline-block; font-size: 11px; letter-spacing: .12em; color: var(--accent2); border: 1px solid rgba(255,109,179,.5);
+         border-radius: 6px; padding: 1px 6px; margin-left: 6px; vertical-align: 2px; }
+  .beta { display: inline-block; font-size: 11px; letter-spacing: .12em; color: var(--muted); border: 1px solid var(--line);
+          border-radius: 6px; padding: 1px 6px; margin-left: 4px; vertical-align: 2px; }
+  @media (max-width: 900px) { .grid, .steps, .uses { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .grid, .steps, .uses { grid-template-columns: 1fr; } }
+
+  /* Karşılaştırma */
+  .compare { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--card); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+  .compare th, .compare td { padding: 14px 18px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .compare tr:last-child td { border-bottom: 0; }
+  .compare th { font-size: 14px; letter-spacing: .08em; color: var(--muted); font-weight: 600; background: #26292f; }
+  .compare th.us { color: var(--accent2); }
+  .compare td:first-child { color: var(--text); width: 46%; }
+  .compare td { color: var(--muted); font-size: 15.5px; }
+  .compare td.yes { color: var(--text); }
+  .compare td.yes::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+  .note { color: var(--muted); font-size: 13.5px; margin-top: 12px; }
+  @media (max-width: 640px) { .compare th, .compare td { padding: 11px 10px; font-size: 14px; } }
+
+  /* Dürüst / gizli */
+  .trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .trio div { border-top: 2px solid var(--accent); padding-top: 14px; }
+  .trio h3 { margin: 0 0 6px; font-size: 19px; }
+  .trio p { margin: 0; color: var(--muted); font-size: 15.5px; }
+  @media (max-width: 760px) { .trio { grid-template-columns: 1fr; } }
+
+  .plans { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .plan { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 28px; }
+  .plan.p { border-color: rgba(255,30,140,.55); box-shadow: 0 0 0 1px rgba(255,30,140,.18) inset; }
+  .plan h3 { margin: 0 0 4px; font-size: 22px; }
+  .plan .tag { color: var(--muted); font-size: 15px; margin-bottom: 16px; }
+  .plan ul { margin: 0; padding-left: 20px; }
+  .plan li { margin: 6px 0; }
+  @media (max-width: 700px) { .plans { grid-template-columns: 1fr; } }
+
+  details { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px 20px; margin-bottom: 12px; }
+  summary { cursor: pointer; font-weight: 600; }
+  details p { color: var(--muted); margin: 10px 0 0; }
+
+  .final { text-align: center; background: radial-gradient(50% 80% at 50% 100%, rgba(212,0,106,.25), transparent 70%), var(--bg); }
+  .final h2 { font-size: clamp(32px, 5vw, 54px); }
+  .final p { color: var(--muted); margin: 0 auto 28px; max-width: 32em; }
+
+  footer { border-top: 1px solid var(--line); padding: 32px 0 48px; color: var(--muted); font-size: 14px; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="assets/favicon-192.png" alt=""><span>STEADY<b>LAPSE</b></span></a>
+    <nav>
+      <a class="opt" href="#how">How it works</a>
+      <a class="opt" href="#uses">Ideas</a>
+      <a class="opt" href="#features">Features</a>
+      <a href="#plans">Free &amp; PRO</a>
+      <a href="privacy.html">Privacy</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero" id="top">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">SHOOT · LEAVE · RENDER · GRADE</p>
+      <h1>Your whole<br>timelapse studio.<br><span>One app.</span></h1>
+      <p class="lead"><strong>Set it up. Turn the screen off. Walk away.</strong> Clouds race, cities pulse, a drawing comes to life — the video builds itself while you're gone, in the look you choose. Change the look later, as often as you like.</p>
+      <a class="cta" href="https://play.google.com/store/apps/details?id=com.emrahustdag.timelapsesuite">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 2.5v19l16-9.5z"/></svg>
+        Get it on Google Play
+      </a>
+      <span class="sub-cta">Free to start · No ads · No account · No watermark</span>
+    </div>
+    <img class="ap" src="assets/aperture.png" alt="Steadylapse aperture logo">
+  </div>
+</div>
+
+<div class="band">
+  <div class="wrap">
+    <p class="big cond">Make time visible.</p>
+    <p class="small">Hours become seconds. The world moves too slowly to see — Steadylapse lets you watch it happen.</p>
+  </div>
+</div>
+
+<section id="how">
+  <div class="wrap">
+    <h2>Three steps. <span>Then let time do the work.</span></h2>
+    <p class="intro">No laptop, no intervalometer cable, no editing. Just your phone on something steady.</p>
+    <div class="steps">
+      <div class="step"><h3>Frame it</h3><p>Pick one of 20 ready-made scenarios — clouds, traffic, construction, sunset — or set the interval and number of shots yourself. You see the shoot length and the final video length before you start.</p></div>
+      <div class="step"><h3>Walk away</h3><p>Turn the screen off. Steadylapse keeps shooting for hours, counts down to every frame and steps in before your phone overheats.</p></div>
+      <div class="step"><h3>Come back to a film</h3><p>When the last frame is in, the time lapse is built on your phone in the color look you picked and saved to your gallery — even if you've left the app.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="looks">
+  <div class="wrap">
+    <h2>Change the look. <span>Anytime.</span></h2>
+    <p class="intro">Your frames are always shot natural. The color is applied when the video is built — so you can try a look before you shoot and change it after, as often as you like. The original is never overwritten.</p>
+    <img src="assets/looks-15.jpg" alt="The same frame in Steadylapse's 8 color effects: Natural, Auto, Mono, Cinematic, Dramatic, Vivid, Golden Hour and Film" style="display:block;width:100%;border-radius:18px;border:1px solid var(--line)">
+    <div class="trio" style="margin-top:28px">
+      <div><h3>Before you shoot</h3><p>Take a test frame and tap through 8 looks — Natural, Auto, Mono, Cinematic, Dramatic, Vivid, Golden Hour and Film.</p></div>
+      <div><h3>After the shoot</h3><p>Pick another look on the summary card and render a new version. Your first video stays exactly as it was.</p></div>
+      <div><h3>Any shoot, any time</h3><p>Re-render any earlier shoot from your gallery — or any video on your phone. Preview is free; rendering with a look is <span class="pro">PRO</span>.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="uses">
+  <div class="wrap">
+    <h2>Every kind of time lapse. <span>One camera.</span></h2>
+    <p class="intro">From a ten-minute sky to a building that takes a season. Here's where to start — the built-in scenarios set the numbers for you.</p>
+    <div class="uses">
+      <div class="use"><div class="top g1"><h3 class="cond">Clouds</h3></div><div class="body">
+        <p>The classic. Fast clouds turn a quiet sky into weather in motion.</p><span class="hint">START WITH · 2–5 s INTERVAL</span></div></div>
+      <div class="use"><div class="top g2"><h3 class="cond">City &amp; traffic</h3></div><div class="body">
+        <p>Streets that never stop. Add a slower manual shutter <span class="pro">PRO</span> and headlights stretch into ribbons of light.</p><span class="hint">START WITH · 1–2 s INTERVAL</span></div></div>
+      <div class="use"><div class="top g3"><h3 class="cond">Sunsets</h3></div><div class="body">
+        <p>Golden hour into blue hour. Holy Grail <span class="pro">PRO</span><span class="beta">BETA</span> follows the fading light, frame by frame.</p><span class="hint">START 30 MIN BEFORE SUNSET · 3–6 s</span></div></div>
+      <div class="use"><div class="top g4"><h3 class="cond">Construction</h3></div><div class="body">
+        <p>Weeks of work in seconds. Ghost Frame <span class="pro">PRO</span> lines up today's shot with yesterday's.</p><span class="hint">START WITH · 1–5 min INTERVAL</span></div></div>
+      <div class="use"><div class="top g5"><h3 class="cond">Plants &amp; growth</h3></div><div class="body">
+        <p>Seedlings stretch, flowers open and turn to the light. Patience, compressed.</p><span class="hint">START WITH · 5–15 min INTERVAL</span></div></div>
+      <div class="use"><div class="top g6"><h3 class="cond">Study, art &amp; making</h3></div><div class="body">
+        <p>A study session, a painting, a build on your desk — hours of focus in a minute. The front camera is free.</p><span class="hint">START WITH · 3–10 s INTERVAL</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <h2>Simple to shoot. <span>Stunning to watch.</span></h2>
+    <p class="intro">Everything is read from your phone: if a lens can't do something, Steadylapse tells you instead of showing a setting that silently does nothing.</p>
+    <div class="grid">
+      <div class="card">
+        <svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M10 18h4"/></svg>
+        <h3>Hours, screen off</h3>
+        <p>Shoots in the background with the screen off. Eco mode, heat protection and a live “time remaining” keep long sessions on track — and interrupted shoots are recovered.</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>
+        <h3>Manual control <span class="pro">PRO</span></h3>
+        <p>Manual ISO, shutter speed, white balance presets and focus — plus free exposure, focus and white-balance locks to keep every frame consistent.</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/></svg>
+        <h3>Every lens, real zoom</h3>
+        <p>Main and front for free; ultra-wide and telephoto with PRO — whatever your phone shares with apps, at its real zoom range. Pinch to zoom, swipe to switch.</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><rect x="8" y="8" width="8" height="8" rx="1" opacity=".6"/></svg>
+        <h3>Ghost Frame <span class="pro">PRO</span></h3>
+        <p>Shooting a garden or a building site over days? Yesterday's last frame overlays your live view so you line up exactly where you left off.</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M10 9.5v5l4.5-2.5z"/></svg>
+        <h3>The video makes itself</h3>
+        <p>1080p, or 4K on phones that support it <span class="pro">PRO</span>. 24 or 30 fps, portrait or landscape. No watermark, no time limit — even in the free version.</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24"><circle cx="8" cy="9" r="5"/><circle cx="16" cy="9" r="5" opacity=".7"/><circle cx="12" cy="15.5" r="5" opacity=".5"/></svg>
+        <h3>Color Effects <span class="pro">PRO</span></h3>
+        <p>8 looks, from Cinematic to Film. Preview them for free on a test frame, render with them in PRO — and change the look of any shoot later.</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 15l3-3 2 2 3-4 2 3"/><path d="M3 8h18" opacity=".6"/></svg>
+        <h3>RAW (DNG) frames <span class="pro">PRO</span></h3>
+        <p>Keep every frame as JPEG, RAW DNG or both — ready for Lightroom. Each shoot gets its own folder. DNG on phones and lenses that offer it.</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></svg>
+        <h3>My Setups</h3>
+        <p>Shoot the same scene again and again? Save all your settings under a name and load them next time. Anything your phone can't do is skipped, and the app tells you.</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <h3>Holy Grail <span class="pro">PRO</span><span class="beta">BETA</span></h3>
+        <p>As daylight fades, ISO and shutter speed ramp gradually, frame by frame, to follow the light into dusk. In beta: results depend on your phone's camera.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="band">
+  <div class="wrap">
+    <p class="big cond">Set it. Leave it.<br>Come back to a film.</p>
+  </div>
+</div>
+
+<section class="alt" id="compare">
+  <div class="wrap">
+    <h2>More than your phone's <span>built-in time-lapse.</span></h2>
+    <p class="intro">Your camera app's time-lapse mode picks everything for you. That's great for a quick clip. Steadylapse is for when you want to decide.</p>
+    <table class="compare">
+      <tr><th></th><th>Typical built-in mode</th><th class="us">Steadylapse</th></tr>
+      <tr><td>Choose the interval and number of shots — see the final length before you start</td><td>Picks the speed for you</td><td class="yes">Your call, to the second</td></tr>
+      <tr><td>Shoot for hours with the screen off — and recover an interrupted shoot</td><td>Varies</td><td class="yes">Built for it</td></tr>
+      <tr><td>Line up a multi-day project with yesterday's frame</td><td>No</td><td class="yes">Ghost Frame <span class="pro">PRO</span></td></tr>
+      <tr><td>Manual ISO, shutter, white balance and locks for consistent frames</td><td>No</td><td class="yes">Full control</td></tr>
+      <tr><td>Keep every frame — JPEG or RAW (DNG) — for editing</td><td>Video only</td><td class="yes">Every frame <span class="pro">PRO</span></td></tr>
+      <tr><td>Change the color look after the shoot, from the original frames</td><td>Filters on the finished video</td><td class="yes">8 looks, re-render anytime</td></tr>
+      <tr><td>Save your settings for the next shoot of the same scene</td><td>—</td><td class="yes">My Setups</td></tr>
+      <tr><td>See exactly what your phone's camera can and can't do</td><td>—</td><td class="yes">Read from your device</td></tr>
+    </table>
+    <p class="note">Built-in modes differ by phone and brand. Many phones' own night modes can expose far longer than apps are allowed to — for stars and deep night, your built-in camera may do better.</p>
+  </div>
+</section>
+
+<section id="honest">
+  <div class="wrap">
+    <h2>Honest by design.</h2>
+    <p class="intro">No overpromises, no tracking, no surprises. Steadylapse is made by Emrah Üstdağ, an independent photographer and developer — no company behind it.</p>
+    <div class="trio">
+      <div><h3>Read from your phone</h3><p>Every lens, ISO range and shutter speed comes from your device. If something isn't supported, the app says so — and you can see your phone's limits in the app.</p></div>
+      <div><h3>Your photos stay yours</h3><p>No account, no sign-in, no analytics on your shots. Frames and videos are saved to your gallery and never leave your phone.</p></div>
+      <div><h3>Free means free</h3><p>No ads, no watermark, no time limit, no project limit. PRO adds tools — it doesn't hold your videos hostage.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="plans">
+  <div class="wrap">
+    <h2>Free to start. <span>PRO when you need it.</span></h2>
+    <p class="intro">The free version has no time limit, no watermark and no ads.</p>
+    <div class="plans">
+      <div class="plan">
+        <h3>Free</h3>
+        <div class="tag">Everything you need for your first time lapses</div>
+        <ul>
+          <li>1080p time lapse videos, built automatically</li>
+          <li>Main and front cameras</li>
+          <li>20 ready-made scenarios</li>
+          <li>Exposure, focus and white-balance locks</li>
+          <li>Screen-off shooting, eco mode, grid, torch</li>
+          <li>My Setups and Color Effects preview</li>
+          <li>Built-in guide and pre-shoot checklist</li>
+        </ul>
+      </div>
+      <div class="plan p">
+        <h3>PRO</h3>
+        <div class="tag">One-time Lifetime unlock, or Yearly with a 7-day free trial</div>
+        <ul>
+          <li>Manual ISO, shutter speed, white balance presets, focus</li>
+          <li>4K video on phones that support it</li>
+          <li>Ultra-wide and telephoto lenses</li>
+          <li>Color Effects: 8 looks, re-render any shoot</li>
+          <li>RAW (DNG) and full-resolution frames</li>
+          <li>Ghost Frame for multi-day projects</li>
+          <li>Start delay and 6 color themes</li>
+          <li>Holy Grail day-to-dusk exposure <span class="beta">BETA</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2>Questions</h2>
+    <p class="intro">Short answers to what photographers ask first.</p>
+    <details><summary>How is this different from my phone's time-lapse mode?</summary>
+      <p>Your phone's built-in mode chooses the speed and exposure for you and gives you a video. Steadylapse lets you choose the interval and length, shoot for hours or across days, set exposure and white balance yourself, line up multi-day projects and keep every frame. If you just want a quick clip, the built-in mode is fine; if you want control, that's what Steadylapse is for.</p></details>
+    <details><summary>What are Color Effects — and can I change them later?</summary>
+      <p>Eight color looks (Natural, Auto, Mono, Cinematic, Dramatic, Vivid, Golden Hour, Film). Your frames are always shot natural and the look is applied when the video is built, so you can render the same shoot again in another look at any time. If you kept the frames, the new version is built from them; if not, the video itself is re-colored. The original file is never overwritten. Previewing looks is free; rendering with them is PRO.</p></details>
+    <details><summary>Can I get RAW (DNG) files?</summary>
+      <p>Yes, with PRO, on phones and lenses that offer RAW to apps. Choose JPEG, DNG or both under Keep All Frames. DNG files are large and take longer to save, so Steadylapse measures your phone's safe minimum interval and won't let a DNG shoot run faster than your phone can write.</p></details>
+    <details><summary>Can I film myself studying or drawing?</summary>
+      <p>Yes — that's one of the most popular uses. The front camera is free, the screen can stay off for hours, and the video is ready when you're done.</p></details>
+    <details><summary>Does it really keep shooting with the screen off?</summary>
+      <p>Yes. Steadylapse runs as a foreground service with a notification, so Android keeps it alive while the screen is off. For overnight sessions, keep the phone charging and turn off automatic restarts or app updates for the night — the in-app checklist walks you through it.</p></details>
+    <details><summary>Can it shoot stars and the Milky Way?</summary>
+      <p>Usually not. Most phones limit how long third-party apps can expose a single frame — often well under a second, much shorter than the built-in night mode. That's enough for twilight, city lights and the moon, but not for faint stars. Steadylapse reads your phone's real limits and shows them, so you know before you shoot.</p></details>
+    <details><summary>Is Holy Grail ready for an important shoot?</summary>
+      <p>It's in beta. It ramps exposure smoothly from daylight into dusk, until your phone reaches its longest allowed exposure — after that the video gently darkens. Results depend on your phone's camera, so do a short test run first. Start about 30 minutes before sunset for the best transition.</p></details>
+    <details><summary>What happens if the shoot is interrupted?</summary>
+      <p>Frames are saved to your phone as they're taken. If the battery dies or the phone restarts, Steadylapse finds those frames the next time you open it and lets you build the video or keep the frames.</p></details>
+    <details><summary>Which phones does it work on?</summary>
+      <p>Android 10 or newer with a camera. Lenses, 4K, manual settings and exposure range vary by phone — Steadylapse reads them from your device and clearly marks anything your phone doesn't support.</p></details>
+    <details><summary>Do I have to buy PRO again on a new phone?</summary>
+      <p>No. PRO is tied to your Google account: open Steadylapse on any phone signed in to the same account and PRO is restored. It also stays unlocked when you're offline, out in the field.</p></details>
+    <details><summary>Do I need an account or internet?</summary>
+      <p>No. There's no account and no sign-in. The app only goes online through Google Play to show prices and handle purchases. Your photos never leave your phone.</p></details>
+    <details><summary>What language is the app in?</summary>
+      <p>The app's screens are in English for now. The store page, this website and the in-app guide topics are written to be easy to follow.</p></details>
+  </div>
+</section>
+
+<section class="showcase" style="padding:40px 0 0">
+  <div class="wrap"><img src="assets/og-image-15.jpg" alt="Steadylapse — Your whole timelapse studio. One app. Shoot, leave, render, grade." style="display:block;width:100%;border-radius:18px;border:1px solid var(--line)"></div>
+</section>
+
+<section class="final">
+  <div class="wrap">
+    <h2>Time moves.<br><span>Start rolling.</span></h2>
+    <p>Put your phone somewhere steady, pick a scene and let the hours pass.</p>
+    <a class="cta" href="https://play.google.com/store/apps/details?id=com.emrahustdag.timelapsesuite">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 2.5v19l16-9.5z"/></svg>
+      Get it on Google Play
+    </a>
+    <span class="sub-cta">Free to start · No ads · No account</span>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Emrah Üstdağ · Steadylapse</span>
+    <span><a href="guide.html">Sunset time lapse guide</a> · <a href="press.html">Press kit</a> · <a href="privacy.html">Privacy Policy</a> · <a href="mailto:steadylapse@gmail.com">steadylapse@gmail.com</a></span>
+  </div>
+</footer>
+
+</body>
+</html>

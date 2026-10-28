@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to Shoot a Day-to-Night Time Lapse with an Android Phone — Steadylapse</title>
+<meta name="description" content="A practical guide to shooting a sunset-to-night (Holy Grail) time lapse with an Android phone: setup, interval math, exposure ramping, focus and white balance locks, battery and heat.">
+<meta property="og:title" content="How to shoot a day-to-night time lapse with an Android phone">
+<meta property="og:image" content="assets/og-image.png">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<style>
+  :root { --bg:#1c1e22; --card:#2a2d33; --line:#383c43; --text:#eceef2; --muted:#a7acb5; --accent:#ff1e8c; --accent2:#ff6db3; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:18px/1.7 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  a { color:var(--accent2); }
+  header { border-bottom:1px solid var(--line); }
+  header .wrap { display:flex; align-items:center; justify-content:space-between; height:60px; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:600; letter-spacing:.14em; font-size:15px; color:var(--text); text-decoration:none; }
+  .brand img { width:30px; height:30px; } .brand b { color:var(--accent); font-weight:600; }
+  .wrap { max-width:760px; margin:0 auto; padding:0 16px; }
+  article { padding:40px 0 64px; }
+  h1 { font-size:clamp(30px,5vw,42px); line-height:1.15; margin:0 0 12px; }
+  .meta { color:var(--muted); font-size:15px; margin-bottom:32px; }
+  h2 { font-size:25px; margin:40px 0 8px; }
+  h3 { font-size:19px; margin:24px 0 4px; }
+  p, li { color:#d9dce2; }
+  .box { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--accent); border-radius:12px; padding:16px 20px; margin:20px 0; }
+  .box p { margin:0; }
+  table { width:100%; border-collapse:collapse; margin:16px 0; font-size:16px; }
+  th, td { border-bottom:1px solid var(--line); padding:8px 6px; text-align:left; }
+  th { color:var(--muted); font-weight:600; }
+  code { background:#2f333a; padding:1px 6px; border-radius:5px; font-size:.92em; }
+  .cta { display:inline-block; background:var(--accent); color:#fff; font-weight:600; padding:12px 22px; border-radius:999px; text-decoration:none; margin-top:8px; }
+  footer { border-top:1px solid var(--line); padding:28px 0 40px; color:var(--muted); font-size:14px; }
+</style>
+</head>
+<body>
+<header><div class="wrap"><a class="brand" href="index.html"><img src="assets/favicon-192.png" alt=""><span>STEADY<b>LAPSE</b></span></a><a href="index.html">← Home</a></div></header>
+
+<main class="wrap">
+<article>
+  <h1>How to shoot a day-to-night time lapse with an Android phone</h1>
+  <div class="meta">A practical guide · about 8 minutes</div>
+
+  <p>A sunset that rolls into the night is the most impressive time lapse you can shoot — and the hardest. In about an hour the light drops thousands of times. If the camera keeps the same exposure, the end of the clip turns black; if it adjusts automatically and abruptly, the video flickers. Here's how to get a smooth transition with nothing more than a phone and a tripod.</p>
+
+  <h2>1. What you need</h2>
+  <ul>
+    <li><strong>A tripod or any rock-solid support.</strong> The phone must not move by a millimetre for the whole shoot. A cheap phone clamp on a small tripod is enough; weigh it down if it's windy.</li>
+    <li><strong>Power.</strong> A full battery and, for anything over an hour, a power bank.</li>
+    <li><strong>Free storage.</strong> A 600-frame shoot at 12 MP takes roughly 2–3 GB before it becomes a video.</li>
+    <li><strong>A clear view of the sky</strong> — ideally facing the sunset, with something interesting in the foreground: a skyline, mountains, water.</li>
+  </ul>
+
+  <h2>2. Do the interval math first</h2>
+  <p>A time lapse is just photos taken at a fixed interval and played back as video. Three numbers decide everything:</p>
+  <p><code>frames = video length (s) × frame rate</code> &nbsp;and&nbsp; <code>shoot time = frames × interval</code></p>
+  <table>
+    <tr><th>Goal</th><th>Frames (30 fps)</th><th>Interval</th><th>Shoot time</th></tr>
+    <tr><td>10 s clip of fast clouds</td><td>300</td><td>2 s</td><td>10 min</td></tr>
+    <tr><td>20 s sunset to night</td><td>600</td><td>6 s</td><td>60 min</td></tr>
+    <tr><td>15 s city lights coming on</td><td>450</td><td>8 s</td><td>60 min</td></tr>
+  </table>
+  <p>For a sunset, start <strong>about 30 minutes before the sun touches the horizon</strong> and keep going 30–45 minutes after it has set. The best colours often come 15–20 minutes after sunset.</p>
+
+  <h2>3. Why exposure is the hard part</h2>
+  <p>You have two options, and both fail on their own:</p>
+  <ul>
+    <li><strong>Fixed (manual) exposure:</strong> perfectly smooth, but by the time it's dark the frames are black.</li>
+    <li><strong>Full auto exposure:</strong> the image stays bright, but the camera jumps between settings from frame to frame, which shows up as flicker.</li>
+  </ul>
+  <p>Professional time-lapse photographers use a technique nicknamed the <strong>"Holy Grail"</strong>: they keep exposure locked and change it in tiny, regular steps as the light fades — slower shutter speed first, then higher ISO. Each step is too small to see, so the video brightens and darkens smoothly instead of flickering. Traditionally that means a laptop or a dedicated controller attached to the camera.</p>
+
+  <div class="box"><p><strong>On a phone:</strong> Steadylapse's Holy Grail mode (PRO, currently in beta) does this ramping automatically — it measures the scene and moves ISO and shutter speed a little at a time, frame by frame, within the limits your phone allows. When the phone reaches its longest allowed exposure, the clip simply darkens gently from there.</p></div>
+
+  <h2>4. Lock everything else</h2>
+  <p>Exposure isn't the only thing that flickers. Before you start:</p>
+  <ul>
+    <li><strong>Lock focus</strong> on something far away (or the horizon). If the phone refocuses between frames, the image subtly "breathes".</li>
+    <li><strong>Lock white balance</strong>, or pick a fixed preset such as Daylight. Auto white balance shifts colour from frame to frame — and it would also neutralise the warm sunset tones you want.</li>
+    <li><strong>Turn off HDR, beauty and scene modes</strong> in whatever app you use; they process each frame differently.</li>
+  </ul>
+
+  <h2>5. Keep the phone alive for an hour (or six)</h2>
+  <ul>
+    <li><strong>Screen off.</strong> The screen is the biggest drain on the battery and a major source of heat. Use an app that keeps shooting with the screen off.</li>
+    <li><strong>Heat.</strong> Phones throttle or shut the camera down when they get hot. Keep it out of direct sun, remove a thick case, and avoid charging in the heat if you can.</li>
+    <li><strong>Interruptions.</strong> Silence the phone, and for overnight shoots switch off scheduled restarts and automatic app updates.</li>
+  </ul>
+
+  <h2>6. What phones can — and can't — do at night</h2>
+  <p>Be realistic about the dark end of the sunset. Your phone's built-in night mode can expose for many seconds, but most phones limit how long a third-party app may expose a single frame — often well under a second. That's plenty for twilight, city lights and the moon, but usually not enough for the Milky Way. Plan the shot so that it ends at blue hour or with city lights rather than deep darkness, and you'll get a clean, bright result.</p>
+
+  <h2>7. Shoot, then let it build</h2>
+  <p>Start the sequence, turn the screen off and step away. Resist checking every few minutes — every touch is a chance to nudge the phone. When the last frame is captured, assemble the photos into a video at 24 or 30 fps.</p>
+
+  <h2>Do it in one app</h2>
+  <p>Steadylapse was built for exactly this kind of shot. Pick the <em>Sunset / Sunrise</em> scenario, turn on Holy Grail, lock focus and turn the screen off — Holy Grail releases the white-balance lock on purpose, so the warm-to-blue shift of the evening stays natural. It keeps shooting for hours, shows a countdown to the next frame and the time remaining, protects the phone from overheating and builds the video automatically when it's done — even if you've left the app.</p>
+  <a class="cta" href="https://play.google.com/store/apps/details?id=com.emrahustdag.timelapsesuite">Get Steadylapse on Google Play</a>
+</article>
+</main>
+
+<footer><div class="wrap">© 2026 Emrah Üstdağ · <a href="index.html">Steadylapse</a> · <a href="privacy.html">Privacy</a></div></footer>
+</body>
+</html>
