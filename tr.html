@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Steadylapse — Android için Timelapse Kamera</title>
+<meta name="description" content="Steadylapse, tüm timelapse (hızlandırılmış video) stüdyonu tek Android uygulamasında toplar: ekran kapalı saatlerce çek, 8 renk efektiyle görünümü istediğin zaman değiştir, tam manuel kontrol, her lens ve RAW (DNG) kareler — video kendiliğinden oluşur.">
+<meta property="og:title" content="Steadylapse — Tüm timelapse stüdyon. Tek uygulamada">
+<meta property="og:description" content="Çek · Bırak · Oluştur · Renklendir. Ekran kapalı saatlerce çekim, çekimden sonra değiştirilebilen 8 renk efekti, manuel kontrol ve RAW (DNG) — Android telefonunda.">
+<meta property="og:image" content="https://emrahustdag.github.io/steadylapse/assets/og-image-15-tr.jpg">
+<meta property="og:url" content="https://emrahustdag.github.io/steadylapse/tr.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#1c1e22">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="alternate" hreflang="en" href="index.html">
+<link rel="alternate" hreflang="tr" href="tr.html">
+<link rel="apple-touch-icon" href="assets/favicon-192.png">
+<style>
+  :root {
+    --bg: #1c1e22; --bg2: #24272c; --card: #2a2d33; --line: #383c43;
+    --text: #eceef2; --muted: #a7acb5; --accent: #ff1e8c; --accent2: #ff6db3;
+    --dn: linear-gradient(90deg, #f7b267 0%, #f27059 25%, #c2366f 52%, #5b2a7a 76%, #141a33 100%);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 17px/1.6 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+  .cond { font-family: "Bahnschrift SemiCondensed", "Roboto Condensed", "Arial Narrow", "Segoe UI", sans-serif;
+          font-stretch: condensed; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+
+  header { position: sticky; top: 0; z-index: 5; background: rgba(28,30,34,.88); backdrop-filter: blur(8px);
+           border-bottom: 1px solid var(--line); }
+  header .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: .14em; font-size: 15px; color: var(--text); }
+  .brand img { width: 30px; height: 30px; }
+  .brand b { color: var(--accent); font-weight: 600; }
+  nav a { color: var(--muted); margin-left: 22px; font-size: 15px; }
+  nav a:hover { color: var(--text); text-decoration: none; }
+  @media (max-width: 760px) { nav a.opt { display: none; } }
+  @media (max-width: 420px) { nav a { margin-left: 14px; font-size: 14px; } .brand { font-size: 14px; letter-spacing: .1em; } }
+
+  .hero { position: relative; overflow: hidden;
+          background: radial-gradient(60% 70% at 28% 45%, rgba(212,0,106,.22), transparent 70%), var(--bg); }
+  .hero .wrap { display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: center; padding-top: 72px; padding-bottom: 80px; }
+  .hero img.ap { width: 100%; max-width: 440px; justify-self: center; filter: drop-shadow(0 18px 40px rgba(0,0,0,.55)); }
+  .eyebrow { font-size: 13px; letter-spacing: .22em; color: var(--accent2); margin: 0 0 14px; font-weight: 600; }
+  .hero h1 { font-size: clamp(38px, 5.8vw, 62px); line-height: 1.04; margin: 0 0 20px; font-weight: 600; letter-spacing: -.015em; }
+  .hero h1 span { color: var(--accent); }
+  .hero p.lead { font-size: 19px; color: var(--muted); margin: 0 0 30px; max-width: 34em; }
+  .hero p.lead strong { color: var(--text); font-weight: 600; }
+  .cta { display: inline-flex; align-items: center; gap: 10px; background: var(--accent); color: #fff; font-weight: 600;
+         padding: 14px 24px; border-radius: 999px; font-size: 16px; box-shadow: 0 8px 24px rgba(255,30,140,.28); }
+  .cta:hover { background: #ff3d9b; text-decoration: none; }
+  .cta svg { width: 20px; height: 20px; }
+  .sub-cta { display: block; margin-top: 12px; font-size: 14px; color: var(--muted); }
+  @media (max-width: 820px) {
+    .hero .wrap { grid-template-columns: 1fr; text-align: center; padding-top: 40px; }
+    .hero img.ap { max-width: 260px; order: -1; }
+    .hero p.lead { margin-left: auto; margin-right: auto; }
+  }
+
+  /* Sinematik şerit: gündüzden geceye renk geçişi + büyük dar başlık */
+  .band { background: var(--dn); position: relative; }
+  .band::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.05), rgba(0,0,0,.28)); }
+  .band .wrap { position: relative; z-index: 1; padding: 54px 16px; text-align: center; }
+  .band .big { font-size: clamp(30px, 6.4vw, 70px); line-height: 1; color: #fff; text-shadow: 0 3px 18px rgba(0,0,0,.35); margin: 0; }
+  .band .small { margin: 14px 0 0; color: rgba(255,255,255,.88); font-size: 17px; text-shadow: 0 1px 8px rgba(0,0,0,.35); }
+
+  section { padding: 76px 0; }
+  section.alt { background: var(--bg2); }
+  h2 { font-size: clamp(27px, 3.6vw, 40px); margin: 0 0 10px; font-weight: 600; letter-spacing: -.01em; line-height: 1.15; }
+  h2 span { color: var(--accent); }
+  p.intro { color: var(--muted); margin: 0 0 40px; max-width: 42em; }
+
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; counter-reset: s; }
+  .step { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 24px; }
+  .step::before { counter-increment: s; content: counter(s); display: inline-grid; place-items: center; width: 34px; height: 34px;
+                  border-radius: 50%; background: rgba(255,30,140,.15); color: var(--accent2); font-weight: 700; margin-bottom: 12px; }
+  .step h3 { margin: 0 0 6px; font-size: 19px; }
+  .step p { margin: 0; color: var(--muted); font-size: 16px; }
+
+  /* Kullanım alanları */
+  .uses { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .use { border-radius: 18px; overflow: hidden; background: var(--card); border: 1px solid var(--line); }
+  .use .top { height: 92px; display: flex; align-items: flex-end; padding: 14px 18px; }
+  .use .top h3 { margin: 0; font-size: 26px; color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,.45); }
+  .use .body { padding: 16px 18px 20px; }
+  .use p { margin: 0 0 10px; color: var(--muted); font-size: 15.5px; }
+  .use .hint { font-size: 13px; letter-spacing: .06em; color: var(--accent2); }
+  .g1 { background: linear-gradient(135deg, #5f8fc4, #2b4d78); }
+  .g2 { background: linear-gradient(135deg, #3a2a5c, #120f24); }
+  .g3 { background: linear-gradient(135deg, #f7b267, #c2366f 70%, #5b2a7a); }
+  .g4 { background: linear-gradient(135deg, #8a7b66, #3c352c); }
+  .g5 { background: linear-gradient(135deg, #5e9c5a, #24452a); }
+  .g6 { background: linear-gradient(135deg, #2f6f86, #12303f); }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 24px; }
+  .card svg { width: 30px; height: 30px; stroke: var(--accent2); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; margin-bottom: 10px; }
+  .card h3 { margin: 0 0 6px; font-size: 18px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15.5px; }
+  .pro { display: inline-block; font-size: 11px; letter-spacing: .12em; color: var(--accent2); border: 1px solid rgba(255,109,179,.5);
+         border-radius: 6px; padding: 1px 6px; margin-left: 6px; vertical-align: 2px; }
+  .beta { display: inline-block; font-size: 11px; letter-spacing: .12em; color: var(--muted); border: 1px solid var(--line);
+          border-radius: 6px; padding: 1px 6px; margin-left: 4px; vertical-align: 2px; }
+  @media (max-width: 900px) { .grid, .steps, .uses { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .grid, .steps, .uses { grid-template-columns: 1fr; } }
+
+  /* Karşılaştırma */
+  .compare { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--card); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+  .compare th, .compare td { padding: 14px 18px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .compare tr:last-child td { border-bottom: 0; }
+  .compare th { font-size: 14px; letter-spacing: .08em; color: var(--muted); font-weight: 600; background: #26292f; }
+  .compare th.us { color: var(--accent2); }
+  .compare td:first-child { color: var(--text); width: 46%; }
+  .compare td { color: var(--muted); font-size: 15.5px; }
+  .compare td.yes { color: var(--text); }
+  .compare td.yes::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+  .note { color: var(--muted); font-size: 13.5px; margin-top: 12px; }
+  @media (max-width: 640px) { .compare th, .compare td { padding: 11px 10px; font-size: 14px; } }
+
+  /* Dürüst / gizli */
+  .trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .trio div { border-top: 2px solid var(--accent); padding-top: 14px; }
+  .trio h3 { margin: 0 0 6px; font-size: 19px; }
+  .trio p { margin: 0; color: var(--muted); font-size: 15.5px; }
+  @media (max-width: 760px) { .trio { grid-template-columns: 1fr; } }
+
+  .plans { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .plan { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 28px; }
+  .plan.p { border-color: rgba(255,30,140,.55); box-shadow: 0 0 0 1px rgba(255,30,140,.18) inset; }
+  .plan h3 { margin: 0 0 4px; font-size: 22px; }
+  .plan .tag { color: var(--muted); font-size: 15px; margin-bottom: 16px; }
+  .plan ul { margin: 0; padding-left: 20px; }
+  .plan li { margin: 6px 0; }
+  @media (max-width: 700px) { .plans { grid-template-columns: 1fr; } }
+
+  details { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px 20px; margin-bottom: 12px; }
+  summary { cursor: pointer; font-weight: 600; }
+  details p { color: var(--muted); margin: 10px 0 0; }
+
+  .final { text-align: center; background: radial-gradient(50% 80% at 50% 100%, rgba(212,0,106,.25), transparent 70%), var(--bg); }
+  .final h2 { font-size: clamp(32px, 5vw, 54px); }
+  .final p { color: var(--muted); margin: 0 auto 28px; max-width: 32em; }
+
+  footer { border-top: 1px solid var(--line); padding: 32px 0 48px; color: var(--muted); font-size: 14px; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="assets/favicon-192.png" alt=""><span>STEADY<b>LAPSE</b></span></a>
+    <nav>
+      <a class="opt" href="#how">Nasıl çalışır</a>
+      <a class="opt" href="#uses">Fikirler</a>
+      <a class="opt" href="#features">Özellikler</a>
+      <a href="#plans">Ücretsiz &amp; PRO</a>
+      <a class="opt" href="index.html">English</a>
+      <a href="privacy.html">Gizlilik</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero" id="top">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">ÇEK · BIRAK · OLUŞTUR · RENKLENDİR</p>
+      <h1>Tüm timelapse<br>stüdyon<br><span>Tek uygulamada</span></h1>
+      <p class="lead"><strong>Kur. Ekranı kapat. Uzaklaş.</strong> Bulutlar koşar, şehir nabız gibi atar, bir resim kâğıtta belirir — sen yokken video, seçtiğin görünümle kendiliğinden oluşur. Görünümü sonra istediğin kadar değiştir.</p>
+      <a class="cta" href="https://play.google.com/store/apps/details?id=com.emrahustdag.timelapsesuite">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 2.5v19l16-9.5z"/></svg>
+        Google Play'den indir
+      </a>
+      <span class="sub-cta">Ücretsiz başla · Reklam yok · Hesap yok · Filigran yok</span>
+    </div>
+    <img class="ap" src="assets/aperture.png" alt="Steadylapse diyafram logosu">
+  </div>
+</div>
+
+<div class="band">
+  <div class="wrap">
+    <p class="big cond">Zamanı görünür kıl</p>
+    <p class="small">Saatler saniyeye dönüşür. Dünya, gözle görülemeyecek kadar yavaş değişir — Steadylapse bunu izlemeni sağlar.</p>
+  </div>
+</div>
+
+<section id="how">
+  <div class="wrap">
+    <h2>Üç adım <span>Gerisini zaman halleder</span></h2>
+    <p class="intro">Bilgisayar yok, aralık zamanlayıcı kablosu yok, montaj yok. Sadece sabit bir yerde duran telefonun.</p>
+    <div class="steps">
+      <div class="step"><h3>Kadrajı kur</h3><p>20 hazır senaryodan birini seç — bulut, trafik, inşaat, gün batımı — ya da aralığı ve kare sayısını kendin belirle. Çekim süresini ve videonun uzunluğunu başlamadan görürsün.</p></div>
+      <div class="step"><h3>Uzaklaş</h3><p>Ekranı kapat. Steadylapse saatlerce çekmeye devam eder, her kareye geri sayar; telefon ısınırsa ekranı karartıp seni uyarır.</p></div>
+      <div class="step"><h3>Filmine geri dön</h3><p>Son kare çekilince timelapse, seçtiğin renk görünümüyle telefonunda oluşturulur ve galerine kaydedilir — uygulamadan çıkmış olsan bile.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="looks">
+  <div class="wrap">
+    <h2>Görünümü değiştir <span>İstediğin zaman</span></h2>
+    <p class="intro">Kareler hep doğal çekilir. Renk, video oluşturulurken uygulanır — böylece çekimden önce dener, çekimden sonra istediğin kadar değiştirirsin. Asıl dosyan hiçbir zaman üzerine yazılmaz.</p>
+    <img src="assets/looks-15.jpg" alt="Aynı kare Steadylapse'in 8 renk efektinde: Natural, Auto, Mono, Cinematic, Dramatic, Vivid, Golden Hour ve Film" style="display:block;width:100%;border-radius:18px;border:1px solid var(--line)">
+    <div class="trio" style="margin-top:28px">
+      <div><h3>Çekimden önce</h3><p>Bir deneme karesi çek ve 8 görünüm arasında dolaş: Natural, Auto, Mono, Cinematic, Dramatic, Vivid, Golden Hour ve Film.</p></div>
+      <div><h3>Çekimden sonra</h3><p>Özet kartında başka bir görünüm seç, yeni bir sürüm oluştur. İlk videon olduğu gibi kalır.</p></div>
+      <div><h3>Her çekim, her zaman</h3><p>Galerideki eski çekimlerini ya da telefonundaki herhangi bir videoyu yeniden oluştur. Önizleme ücretsiz; renk efektiyle oluşturmak <span class="pro">PRO</span>.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="uses">
+  <div class="wrap">
+    <h2>Her tür timelapse <span>Tek kamera</span></h2>
+    <p class="intro">On dakikalık bir gökyüzünden bir mevsim süren inşaata kadar. Nereden başlayacağın aşağıda — hazır senaryolar sayıları senin yerine ayarlar.</p>
+    <div class="uses">
+      <div class="use"><div class="top g1"><h3 class="cond">Bulutlar</h3></div><div class="body">
+        <p>Klasik. Hızlı bulutlar sakin bir gökyüzünü hareket hâlindeki bir havaya çevirir.</p><span class="hint">BAŞLANGIÇ · 2–5 sn ARALIK</span></div></div>
+      <div class="use"><div class="top g2"><h3 class="cond">Şehir &amp; trafik</h3></div><div class="body">
+        <p>Hiç durmayan sokaklar. Daha yavaş manuel enstantane <span class="pro">PRO</span> ile farlar ışık şeritlerine dönüşür.</p><span class="hint">BAŞLANGIÇ · 1–2 sn ARALIK</span></div></div>
+      <div class="use"><div class="top g3"><h3 class="cond">Gün batımı</h3></div><div class="body">
+        <p>Altın saatten mavi saate. Holy Grail <span class="pro">PRO</span><span class="beta">BETA</span> azalan ışığı kare kare takip eder.</p><span class="hint">GÜN BATIMINDAN 30 DK ÖNCE · 3–6 sn</span></div></div>
+      <div class="use"><div class="top g4"><h3 class="cond">İnşaat</h3></div><div class="body">
+        <p>Haftaların emeği saniyelerde. Ghost Frame <span class="pro">PRO</span> bugünkü kadrajı dünküyle hizalar.</p><span class="hint">BAŞLANGIÇ · 1–5 dk ARALIK</span></div></div>
+      <div class="use"><div class="top g5"><h3 class="cond">Bitki &amp; büyüme</h3></div><div class="body">
+        <p>Fideler uzar, çiçekler açar ve ışığa döner. Sabrın sıkıştırılmış hâli.</p><span class="hint">BAŞLANGIÇ · 5–15 dk ARALIK</span></div></div>
+      <div class="use"><div class="top g6"><h3 class="cond">Ders, sanat &amp; üretim</h3></div><div class="body">
+        <p>Bir ders çalışma oturumu, bir resim, masandaki bir proje — saatlerce süren emek bir dakikada. Ön kamera ücretsiz.</p><span class="hint">BAŞLANGIÇ · 3–10 sn ARALIK</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <h2>Çekmesi kolay <span>İzlemesi büyüleyici</span></h2>
+    <p class="intro">Her şey telefonundan okunur: bir lens bir şeyi yapamıyorsa Steadylapse bunu söyler; sessizce çalışmayan bir ayar göstermez.</p>
+    <div class="grid">
+      <div class="card">
+        <svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M10 18h4"/></svg>
+        <h3>Ekran kapalı, saatlerce</h3>
+        <p>Ekran kapalıyken arka planda çeker. Eco mod, ısı koruması ve canlı "kalan süre" uzun çekimleri yolunda tutar — yarıda kalan çekim kurtarılır.</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>
+        <h3>Manuel kontrol <span class="pro">PRO</span></h3>
+        <p>Manuel ISO, enstantane, beyaz dengesi ön ayarları ve odak — ayrıca her kareyi tutarlı tutan ücretsiz pozlama, odak ve beyaz dengesi kilitleri.</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/></svg>
+        <h3>Her lens, gerçek zoom</h3>
+        <p>Ana ve ön kamera ücretsiz; ultra geniş ve telefoto PRO ile — telefonun uygulamalara ne açıyorsa, gerçek zoom aralığıyla. İki parmakla yakınlaştır, kaydırarak değiştir.</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><rect x="8" y="8" width="8" height="8" rx="1" opacity=".6"/></svg>
+        <h3>Ghost Frame <span class="pro">PRO</span></h3>
+        <p>Bir bahçeyi ya da inşaatı günlerce mi çekiyorsun? Dünkü son kare canlı görüntünün üstüne biner; bıraktığın yeri tam olarak yakalarsın.</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M10 9.5v5l4.5-2.5z"/></svg>
+        <h3>Video kendiliğinden oluşur</h3>
+        <p>1080p, destekleyen telefonlarda 4K <span class="pro">PRO</span>. 24 fps, destekleniyorsa 30 fps; dikey ya da yatay. Ücretsiz sürümde bile filigran yok, süre sınırı yok.</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24"><circle cx="8" cy="9" r="5"/><circle cx="16" cy="9" r="5" opacity=".7"/><circle cx="12" cy="15.5" r="5" opacity=".5"/></svg>
+        <h3>Renk Efektleri <span class="pro">PRO</span></h3>
+        <p>Cinematic'ten Film'e 8 görünüm. Deneme karesinde ücretsiz önizle, PRO ile videoyu oluştur — ve her çekimin görünümünü sonra değiştir.</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 15l3-3 2 2 3-4 2 3"/><path d="M3 8h18" opacity=".6"/></svg>
+        <h3>RAW (DNG) kareler <span class="pro">PRO</span></h3>
+        <p>Her kareyi JPEG, RAW DNG ya da ikisi birden sakla — Lightroom'a hazır. Her çekim kendi klasöründe. DNG, destekleyen telefon ve lenslerde.</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></svg>
+        <h3>My Setups</h3>
+        <p>Aynı sahneyi tekrar tekrar mı çekiyorsun? Tüm ayarlarını bir adla kaydet, sonraki çekimde yükle. Telefonunun yapamadığı bir şey varsa atlanır ve uygulama söyler.</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <h3>Holy Grail <span class="pro">PRO</span><span class="beta">BETA</span></h3>
+        <p>Gün ışığı azalırken ISO ve enstantane kare kare, yavaş yavaş ayarlanır ve ışığı alacakaranlığa kadar izler. Beta aşamasında: sonuç telefonunun kamerasına bağlıdır.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="band">
+  <div class="wrap">
+    <p class="big cond">Kur · Bırak<br>Filmine geri dön</p>
+  </div>
+</div>
+
+<section class="alt" id="compare">
+  <div class="wrap">
+    <h2>Telefonunun kendi <span>timelapse'inden fazlası</span></h2>
+    <p class="intro">Kamera uygulamandaki timelapse modu her şeyi senin yerine seçer. Hızlı bir klip için harika. Steadylapse ise karar vermek istediğin zamanlar için.</p>
+    <table class="compare">
+      <tr><th></th><th>Tipik dahili mod</th><th class="us">Steadylapse</th></tr>
+      <tr><td>Aralığı ve kare sayısını seç — videonun uzunluğunu başlamadan gör</td><td>Hızı senin yerine seçer</td><td class="yes">Saniyesine kadar senin kararın</td></tr>
+      <tr><td>Ekran kapalı saatlerce çek — yarıda kalan çekimi kurtar</td><td>Değişir</td><td class="yes">Tam bunun için yapıldı</td></tr>
+      <tr><td>Çok günlük projeyi dünkü kareyle hizala</td><td>Yok</td><td class="yes">Ghost Frame <span class="pro">PRO</span></td></tr>
+      <tr><td>Tutarlı kareler için manuel ISO, enstantane, beyaz dengesi ve kilitler</td><td>Yok</td><td class="yes">Tam kontrol</td></tr>
+      <tr><td>Düzenleme için her kareyi — JPEG ya da RAW (DNG) — sakla</td><td>Sadece video</td><td class="yes">Her kare <span class="pro">PRO</span></td></tr>
+      <tr><td>Çekimden sonra renk görünümünü, asıl karelerden değiştir</td><td>Bitmiş videoya filtre</td><td class="yes">8 görünüm, istediğin zaman yeniden oluştur</td></tr>
+      <tr><td>Aynı sahnenin sonraki çekimi için ayarlarını kaydet</td><td>—</td><td class="yes">My Setups</td></tr>
+      <tr><td>Telefonunun kamerasının neyi yapıp neyi yapamadığını gör</td><td>—</td><td class="yes">Cihazından okunur</td></tr>
+    </table>
+    <p class="note">Dahili modlar telefona ve markaya göre değişir. Birçok telefonun kendi gece modu, uygulamalara izin verilenden çok daha uzun pozlama yapabilir — yıldızlar ve koyu gece için telefonunun kendi kamerası daha iyi olabilir.</p>
+  </div>
+</section>
+
+<section id="honest">
+  <div class="wrap">
+    <h2>Dürüst tasarım</h2>
+    <p class="intro">Abartılı vaat yok, takip yok, sürpriz yok. Steadylapse'i bağımsız bir fotoğrafçı ve geliştirici olan Emrah Üstdağ yapıyor — arkasında bir şirket yok.</p>
+    <div class="trio">
+      <div><h3>Telefonundan okunur</h3><p>Her lens, ISO aralığı ve enstantane cihazından gelir. Desteklenmeyen bir şey varsa uygulama bunu söyler — telefonunun sınırlarını uygulama içinde görebilirsin.</p></div>
+      <div><h3>Fotoğrafların senindir</h3><p>Hesap yok, giriş yok, çekimlerin üzerinde analiz yok. Kareler ve videolar galerine kaydedilir, telefonundan hiç çıkmaz.</p></div>
+      <div><h3>Ücretsiz gerçekten ücretsiz</h3><p>Reklam yok, filigran yok, süre sınırı yok, proje sınırı yok. PRO araç ekler — videolarını rehin tutmaz.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="plans">
+  <div class="wrap">
+    <h2>Ücretsiz başla <span>PRO gerektiğinde</span></h2>
+    <p class="intro">Ücretsiz sürümde süre sınırı, filigran ve reklam yok.</p>
+    <div class="plans">
+      <div class="plan">
+        <h3>Ücretsiz</h3>
+        <div class="tag">İlk timelapse'lerin için gereken her şey</div>
+        <ul>
+          <li>Kendiliğinden oluşan 1080p timelapse videolar</li>
+          <li>Ana ve ön kamera</li>
+          <li>20 hazır senaryo</li>
+          <li>Pozlama, odak ve beyaz dengesi kilitleri</li>
+          <li>Ekran kapalı çekim, eco mod, ızgara, fener</li>
+          <li>My Setups ve renk efekti önizlemesi</li>
+          <li>Uygulama içi rehber ve çekim öncesi kontrol listesi</li>
+        </ul>
+      </div>
+      <div class="plan p">
+        <h3>PRO</h3>
+        <div class="tag">Tek seferlik Ömür Boyu ya da 7 gün ücretsiz denemeli Yıllık plan</div>
+        <ul>
+          <li>Manuel ISO, enstantane, beyaz dengesi ön ayarları, odak</li>
+          <li>Destekleyen telefonlarda 4K video</li>
+          <li>Ultra geniş ve telefoto lensler</li>
+          <li>Renk Efektleri: 8 görünüm, her çekimi yeniden oluştur</li>
+          <li>RAW (DNG) ve tam çözünürlüklü kareler</li>
+          <li>Çok günlük projeler için Ghost Frame</li>
+          <li>Başlatma gecikmesi ve 6 renk teması</li>
+          <li>Holy Grail gündüzden alacakaranlığa pozlama <span class="beta">BETA</span></li>
+        </ul>
+        <div class="tag" style="margin-top:14px">Satın almadan önce PRO ekranı, telefonunda neleri açtığını gösterir.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2>Sorular</h2>
+    <p class="intro">Fotoğrafçıların ilk sorduklarına kısa cevaplar.</p>
+    <details><summary>Telefonumun kendi timelapse modundan farkı ne?</summary>
+      <p>Telefonunun dahili modu hızı ve pozlamayı senin yerine seçer ve sana bir video verir. Steadylapse aralığı ve uzunluğu seçmeni, saatlerce ya da günlerce çekmeni, pozlamayı ve beyaz dengesini kendin ayarlamanı, çok günlük projeleri hizalamanı ve tüm kareleri saklamanı sağlar. Hızlı bir klip istiyorsan dahili mod yeterli; kontrol istiyorsan Steadylapse tam bunun için.</p></details>
+    <details><summary>Renk Efektleri nedir, sonra değiştirebilir miyim?</summary>
+      <p>Sekiz renk görünümü (Natural, Auto, Mono, Cinematic, Dramatic, Vivid, Golden Hour, Film). Kareler hep doğal çekilir, görünüm video oluşturulurken uygulanır; böylece aynı çekimi istediğin zaman başka bir görünümle yeniden oluşturabilirsin. Kareleri sakladıysan yeni sürüm karelerden yapılır; saklamadıysan videonun kendisi yeniden renklendirilir. Asıl dosya hiçbir zaman üzerine yazılmaz. Önizleme ücretsiz; renk efektiyle oluşturmak PRO.</p></details>
+    <details><summary>RAW (DNG) dosya alabilir miyim?</summary>
+      <p>Evet, PRO ile, RAW'u uygulamalara açan telefon ve lenslerde. Keep All Frames altında JPEG, DNG ya da ikisini seç. DNG dosyaları büyüktür ve kaydedilmesi daha uzun sürer; bu yüzden Steadylapse telefonunun güvenli en kısa aralığını ölçer ve DNG çekimin telefonunun yazabileceğinden hızlı çalışmasına izin vermez.</p></details>
+    <details><summary>Ders çalışırken ya da resim yaparken kendimi çekebilir miyim?</summary>
+      <p>Evet — en sevilen kullanımlardan biri. Ön kamera ücretsiz, ekran saatlerce kapalı kalabilir ve işin bittiğinde video hazırdır.</p></details>
+    <details><summary>Ekran kapalıyken gerçekten çekmeye devam ediyor mu?</summary>
+      <p>Evet. Steadylapse bildirimli bir ön plan hizmeti olarak çalışır; Android onu ekran kapalıyken de açık tutar. Gece boyu çekimlerde telefonu şarjda tut ve o gece için otomatik yeniden başlatmayı ve uygulama güncellemelerini kapat — uygulama içindeki kontrol listesi adım adım anlatır.</p></details>
+    <details><summary>Yıldızları ve Samanyolu'nu çekebilir mi?</summary>
+      <p>Genelde hayır. Telefonlar, başka uygulamaların tek bir kareyi ne kadar uzun pozlayabileceğini sınırlar ve bu sınır telefona göre çok değişir: bazılarında bir saniyenin altında, bazılarında birkaç saniye. Çoğu telefonda bu, dahili gece modundan çok daha kısadır. Bu alacakaranlık, şehir ışıkları ve ay için yeterli, ama sönük yıldızlar için yetmez. Steadylapse telefonunun gerçek sınırlarını okuyup gösterir; çekimden önce bilirsin.</p></details>
+    <details><summary>Holy Grail önemli bir çekim için hazır mı?</summary>
+      <p>Beta aşamasında. Pozlamayı gün ışığından alacakaranlığa yumuşakça taşır; telefonun izin verdiği en uzun pozlamaya ulaşınca video yavaşça kararır. Sonuç telefonunun kamerasına bağlıdır, önce kısa bir deneme çekimi yap. En iyi geçiş için gün batımından yaklaşık 30 dakika önce başla.</p></details>
+    <details><summary>Çekim yarıda kalırsa ne olur?</summary>
+      <p>Kareler çekildikçe telefonuna kaydedilir. Pil biterse ya da telefon yeniden başlarsa, Steadylapse uygulamayı bir sonraki açışında bu kareleri bulur; videoyu oluşturabilir ya da kareleri saklayabilirsin.</p></details>
+    <details><summary>Hangi telefonlarda çalışır?</summary>
+      <p>Kamerası olan Android 10 ve üstü telefonlarda. Lensler, 4K, manuel ayarlar ve pozlama aralığı telefona göre değişir — Steadylapse bunları cihazından okur ve telefonunun desteklemediği her şeyi açıkça işaretler. Samsung Galaxy, Google Pixel ve Xiaomi telefonlarda ve bir Galaxy tablette test edildi.</p></details>
+    <details><summary>Yeni telefonda PRO'yu tekrar almam gerekir mi?</summary>
+      <p>Hayır. PRO Google hesabına bağlıdır: aynı hesapla açılmış herhangi bir telefonda Steadylapse'i açınca PRO geri gelir. İnternetin olmadığı arazide de açık kalır.</p></details>
+    <details><summary>Hesap ya da internet gerekir mi?</summary>
+      <p>Hayır. Hesap ve giriş yok. Uygulama internete yalnızca Google Play üzerinden fiyatları göstermek ve satın almaları yapmak için çıkar. Fotoğrafların telefonundan çıkmaz.</p></details>
+    <p class="note">Uygulamanın arayüzü İngilizcedir.</p>
+  </div>
+</section>
+
+<section class="showcase" style="padding:40px 0 0">
+  <div class="wrap"><img src="assets/og-image-15-tr.jpg" alt="Steadylapse — Tüm timelapse stüdyon, tek uygulamada. Çek, bırak, oluştur, renklendir." style="display:block;width:100%;border-radius:18px;border:1px solid var(--line)"></div>
+</section>
+
+<section class="final">
+  <div class="wrap">
+    <h2>Zaman akıyor<br><span>Kayda başla</span></h2>
+    <p>Telefonunu sabit bir yere koy, bir sahne seç ve saatlerin geçmesine izin ver.</p>
+    <a class="cta" href="https://play.google.com/store/apps/details?id=com.emrahustdag.timelapsesuite">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 2.5v19l16-9.5z"/></svg>
+      Google Play'den indir
+    </a>
+    <span class="sub-cta">Ücretsiz başla · Reklam yok · Hesap yok</span>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Emrah Üstdağ · Steadylapse</span>
+    <span><a href="guide.html">Gün batımı timelapse rehberi (EN)</a> · <a href="press.html">Basın kiti</a> · <a href="privacy.html">Gizlilik politikası</a> · <a href="mailto:steadylapse@gmail.com">steadylapse@gmail.com</a></span>
+  </div>
+</footer>
+
+</body>
+</html>
